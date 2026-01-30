@@ -31,7 +31,6 @@ input {
 }
 .row {
     display:flex;
-    justify-content:space-between;
     margin-bottom:6px;
 }
 button {
@@ -52,7 +51,8 @@ button {
 
 <body>
 <div class="calculator">
-<input id="display" readonly>
+
+<input id="display" type="text" inputmode="decimal" placeholder="0">
 
 <div class="row">
     <button class="mem" onclick="memoryClear()">MC</button>
@@ -114,19 +114,22 @@ button {
     <button class="op" onclick="deleteLast()">DEL</button>
     <button class="op" onclick="clearDisplay()">C</button>
 </div>
+
 </div>
 
 <script>
-let display = document.getElementById("display");
+const display = document.getElementById("display");
 let memory = 0;
 let degreeMode = true;
 
+/* Allow paste safely */
+display.addEventListener("input", () => {
+    display.value = display.value.replace(/[^0-9+\-*/().a-zA-Z ]/g, "");
+});
+
 function append(v){ display.value += v; }
 function clearDisplay(){ display.value = ""; }
-
-function deleteLast(){
-    display.value = display.value.slice(0, -1);
-}
+function deleteLast(){ display.value = display.value.slice(0,-1); }
 
 function toggleAngle(btn){
     degreeMode = !degreeMode;
@@ -144,12 +147,12 @@ function calculate(){
     }
 }
 
-/* Trig */
+/* Trigonometry */
 function sin(x){ return Math.sin(degreeMode ? x*Math.PI/180 : x); }
 function cos(x){ return Math.cos(degreeMode ? x*Math.PI/180 : x); }
 function tan(x){ return Math.tan(degreeMode ? x*Math.PI/180 : x); }
 
-/* Inverse trig */
+/* Inverse Trigonometry */
 function asin(x){ let r=Math.asin(x); return degreeMode? r*180/Math.PI:r; }
 function acos(x){ let r=Math.acos(x); return degreeMode? r*180/Math.PI:r; }
 function atan(x){ let r=Math.atan(x); return degreeMode? r*180/Math.PI:r; }
@@ -159,5 +162,6 @@ function memoryStore(){ memory = Number(display.value)||0; }
 function memoryRecall(){ display.value += memory; }
 function memoryClear(){ memory = 0; }
 </script>
+
 </body>
 </html>
