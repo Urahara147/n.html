@@ -1,9 +1,163 @@
-<!doctype>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Scientific Calculator</title>
+
+<style>
+body {
+    background:#121212;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    font-family:Arial,sans-serif;
+}
+.calculator {
+    background:#1e1e1e;
+    padding:16px;
+    border-radius:12px;
+    width:360px;
+}
+input {
+    width:100%;
+    height:52px;
+    font-size:22px;
+    text-align:right;
+    margin-bottom:12px;
+    padding:6px;
+    border-radius:6px;
+    border:none;
+}
+.row {
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:6px;
+}
+button {
+    flex:1;
+    height:44px;
+    margin:2px;
+    border:none;
+    border-radius:6px;
+    font-size:15px;
+    cursor:pointer;
+}
+.num { background:#2e2e2e; color:#fff; }
+.op  { background:#ff9800; }
+.fn  { background:#03a9f4; }
+.mem { background:#9c27b0; color:#fff; }
+</style>
+</head>
+
 <body>
-<h1>hey its me</h1>
-<p>yoo
-</p><h1><a href="https://netflix.com" target="_blank" title="log into me">click me</a></h1>
-<img src="https://imgs.search.brave.com/g8NOhLg0ml6-bYdMZJZXG4rujiJlw_Q_1mOQN17Ccaw/rs:fit:1200:720:1/g:ce/aHR0cDovL2ltYWdl/czIud2lraWEubm9j/b29raWUubmV0L19f/Y2IyMDEyMTIwMTIx/NDk0NS9rLWFuaW1l/L2ltYWdlcy8xLzFh/L01pa290b0ZpbmRz/VG90c3VrYSdzTXVy/ZGVyZXIucG5n" height="500" width="500">
+<div class="calculator">
+<input id="display" readonly>
+
+<div class="row">
+    <button class="mem" onclick="memoryClear()">MC</button>
+    <button class="mem" onclick="memoryRecall()">MR</button>
+    <button class="mem" onclick="memoryStore()">MS</button>
+    <button class="fn" onclick="toggleAngle(this)">DEG</button>
+</div>
+
+<div class="row">
+    <button class="fn" onclick="append('sin(')">sin</button>
+    <button class="fn" onclick="append('cos(')">cos</button>
+    <button class="fn" onclick="append('tan(')">tan</button>
+    <button class="fn" onclick="append('**2')">x²</button>
+</div>
+
+<div class="row">
+    <button class="fn" onclick="append('asin(')">sin⁻¹</button>
+    <button class="fn" onclick="append('acos(')">cos⁻¹</button>
+    <button class="fn" onclick="append('atan(')">tan⁻¹</button>
+    <button class="fn" onclick="append('Math.sqrt(')">√</button>
+</div>
+
+<div class="row">
+    <button class="fn" onclick="append('(')">(</button>
+    <button class="fn" onclick="append(')')">)</button>
+    <button class="fn" onclick="append('Math.log10(')">log</button>
+    <button class="fn" onclick="append('Math.log(')">ln</button>
+</div>
+
+<div class="row">
+    <button class="num" onclick="append('7')">7</button>
+    <button class="num" onclick="append('8')">8</button>
+    <button class="num" onclick="append('9')">9</button>
+    <button class="op" onclick="append('/')">÷</button>
+</div>
+
+<div class="row">
+    <button class="num" onclick="append('4')">4</button>
+    <button class="num" onclick="append('5')">5</button>
+    <button class="num" onclick="append('6')">6</button>
+    <button class="op" onclick="append('*')">×</button>
+</div>
+
+<div class="row">
+    <button class="num" onclick="append('1')">1</button>
+    <button class="num" onclick="append('2')">2</button>
+    <button class="num" onclick="append('3')">3</button>
+    <button class="op" onclick="append('-')">−</button>
+</div>
+
+<div class="row">
+    <button class="num" onclick="append('0')">0</button>
+    <button class="num" onclick="append('.')">.</button>
+    <button class="op" onclick="calculate()">=</button>
+    <button class="op" onclick="append('+')">+</button>
+</div>
+
+<div class="row">
+    <button class="op" onclick="deleteLast()">DEL</button>
+    <button class="op" onclick="clearDisplay()">C</button>
+</div>
+</div>
+
+<script>
+let display = document.getElementById("display");
+let memory = 0;
+let degreeMode = true;
+
+function append(v){ display.value += v; }
+function clearDisplay(){ display.value = ""; }
+
+function deleteLast(){
+    display.value = display.value.slice(0, -1);
+}
+
+function toggleAngle(btn){
+    degreeMode = !degreeMode;
+    btn.textContent = degreeMode ? "DEG" : "RAD";
+}
+
+function calculate(){
+    try{
+        let exp = display.value;
+        let open = (exp.match(/\(/g)||[]).length;
+        let close = (exp.match(/\)/g)||[]).length;
+        display.value = eval(exp + ")".repeat(open-close));
+    }catch{
+        display.value = "Error";
+    }
+}
+
+/* Trig */
+function sin(x){ return Math.sin(degreeMode ? x*Math.PI/180 : x); }
+function cos(x){ return Math.cos(degreeMode ? x*Math.PI/180 : x); }
+function tan(x){ return Math.tan(degreeMode ? x*Math.PI/180 : x); }
+
+/* Inverse trig */
+function asin(x){ let r=Math.asin(x); return degreeMode? r*180/Math.PI:r; }
+function acos(x){ let r=Math.acos(x); return degreeMode? r*180/Math.PI:r; }
+function atan(x){ let r=Math.atan(x); return degreeMode? r*180/Math.PI:r; }
+
+/* Memory */
+function memoryStore(){ memory = Number(display.value)||0; }
+function memoryRecall(){ display.value += memory; }
+function memoryClear(){ memory = 0; }
+</script>
 </body>
 </html>
